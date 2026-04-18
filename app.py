@@ -25,23 +25,23 @@ with st.form("main_form"):
     
     with col1:
         st.subheader("👤 بيانات العميل")
-        full_name = st.text_input("Full Name")
-        id_number = st.text_input("EID / ID Number")
-        passport = st.text_input("Passport Number")
+        full_name = st.text_input("Full_Name")
+        id_number = st.text_input("ID_Number")
+        passport = st.text_input("Passport_Number")
         nationality = st.text_input("Nationality")
-        phone = st.text_input("Phone Number")
-        email = st.text_input("Email Address")
-        address = st.text_input("Address")
-        client_type = st.radio("Client Type", ["Normal", "Investor"])
+        phone = st.text_input("Mobile_Number")
+        email = st.text_input("Email_Address")
+        address = st.text_input("Home_Address")
+        client_type = st.radio("residency_status", ["Normal", "Investor"])
 
     with col2:
         st.subheader("🏠 بيانات الوحدة")
-        project_name = st.text_input("Project Name", value="THE DISTRICT")
-        unit_number = st.text_input("Unit Number")
-        unit_type = st.text_input("Unit Type / BHK")
+        project_name = st.text_input("Project_Name", value="THE DISTRICT")
+        unit_number = st.text_input("Unit_Number")
+        unit_type = st.text_input("Unit_Type_BHK")
         view = st.text_input("View")
-        sqft = st.number_input("Area (Sqft)", value=0.0)
-        original_price = st.number_input("Original Price (AED)", value=0.0)
+        sqft = st.number_input("Total_UNIT", value=0.0)
+        original_price = st.number_input("total_purchase_price", value=0.0)
         parking = st.selectbox("Parking Option", ["None", "Pay Now (50k)", "Pay at Handover (70k)"])
 
     st.subheader("💰 خطة الدفع")
@@ -86,16 +86,16 @@ if submit_button:
         
         context = {
             "DATE": datetime.now().strftime("%d/%m/%Y"),
-            "Full Name": full_name,
-            "Home Address": address,
-            "Email Address": email,
-            "Mobile Number": phone,
-            "ID Number": id_number,
-            "Passport Number": passport,
-            "Nationality": nationality,
-            "Project Name": project_name,
-            "Unit Number": unit_number,
-            "MANY bhk": unit_type,
+            "Full Name": Full_Name,
+            "Home Address": Home_Address,
+            "Email Address": Email_Address,
+            "Mobile Number": Mobile_Number,
+            "ID Number": ID_Number,
+            "Passport Number": Passport_Number,
+            "Nationality": Nationality,
+            "Project Name": Project_Name,
+            "Unit Number": Unit_Number,
+            "MANY bhk": Unit_Type_BHK,
             "VIEW": view,
             "Total UNIT": f"{sqft:,.2f} sqft",
             "total_purchase_price": f"{total_purchase_price:,.2f}",
