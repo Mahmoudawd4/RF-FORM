@@ -75,7 +75,7 @@ if submit:
     else:
         gov_fee = price * 0.02 + 5625
 
-    doc = DocxTemplate("2026-RF-TEMP-FIXED.docx")
+    doc = DocxTemplate("templates/2026-RF-TEMP-CLEAN.doc")
 
     context = {
         "DATE": datetime.now().strftime("%d/%m/%Y"),
