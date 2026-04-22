@@ -2,10 +2,25 @@ import streamlit as st
 from docxtpl import DocxTemplate
 from datetime import datetime, timedelta
 import io
+import os
 
 st.set_page_config(page_title="RF Generator", layout="centered")
-
 st.title("📄 Reservation Form Generator")
+
+# ✅ تحديد مسار الملف بشكل صحيح (مهم جدًا)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_NAME = "template.docx"   # 👈 خلي اسم الملف بسيط
+template_path = os.path.join(BASE_DIR, TEMPLATE_NAME)
+
+# 🔍 Debug (هتشوفه على الشاشة)
+st.write("📁 Files in app:", os.listdir(BASE_DIR))
+st.write("📄 Template path:", template_path)
+st.write("✅ Exists?", os.path.exists(template_path))
+
+# ❌ لو الملف مش موجود
+if not os.path.exists(template_path):
+    st.error("❌ Template file not found! تأكد إن template.docx مرفوع على GitHub")
+    st.stop()
 
 # 🔥 Payment Plans
 payment_plans = {
@@ -20,6 +35,7 @@ payment_plans = {
     "No discount (Full in 1 month)": {"dp_pct": 100, "disc": 0, "monthly": 0},
 }
 
+# 🧾 الفورم
 with st.form("form"):
     col1, col2 = st.columns(2)
 
@@ -61,13 +77,13 @@ with st.form("form"):
 if submit:
     plan = payment_plans[plan_name]
 
-    selling_price = price * (1 - plan["disc"]/100)
-    dp_amount = selling_price * (plan["dp_pct"]/100)
-    monthly_amount = selling_price * (plan["monthly"]/100)
+    selling_price = price * (1 - plan["disc"] / 100)
+    dp_amount = selling_price * (plan["dp_pct"] / 100)
+    monthly_amount = selling_price * (plan["monthly"] / 100)
     total_monthly = monthly_amount * months
-    end_date = start_date + timedelta(days=30*months)
+    end_date = start_date + timedelta(days=30 * months)
 
-    # Gov Fees
+    # 🏛️ Gov Fees
     if reg_option == "DLD":
         gov_fee = price * 0.04 + 1193.15
     elif reg_option == "ADM":
@@ -75,7 +91,8 @@ if submit:
     else:
         gov_fee = price * 0.02 + 5625
 
-    doc = DocxTemplate("templates/2026-RF-TEMP-CLEAN.doc")
+    # 📄 تحميل التمبليت
+    doc = DocxTemplate(template_path)
 
     context = {
         "DATE": datetime.now().strftime("%d/%m/%Y"),
@@ -89,8 +106,8 @@ if submit:
         "Nationality": "",
         "Passport_Number": passport,
 
-        "Residency_Status": "☒ Normal   ☐ Investor" if client_type=="Normal" else "☐ Normal   ☒ Investor",
-        "residency_status": "☒ Normal   ☐ Investor" if client_type=="Normal" else "☐ Normal   ☒ Investor",
+        "Residency_Status": "☒ Normal   ☐ Investor" if client_type == "Normal" else "☐ Normal   ☒ Investor",
+        "residency_status": "☒ Normal   ☐ Investor" if client_type == "Normal" else "☐ Normal   ☒ Investor",
 
         "total_purchase_price": f"{selling_price:,.2f}",
         "Unit_Number": unit,
@@ -116,23 +133,27 @@ if submit:
         "start_date": start_date.strftime("%d-%b-%Y"),
         "end_date": end_date.strftime("%d-%b-%Y"),
 
-        "Total_Construction_pct": f"{plan['dp_pct'] + (months if plan['monthly']>0 else 0)}%",
-        "Completion_pct": f"{100 - (plan['dp_pct'] + (months if plan['monthly']>0 else 0))}%",
+        "Total_Construction_pct": f"{plan['dp_pct'] + (months if plan['monthly'] > 0 else 0)}%",
+        "Completion_pct": f"{100 - (plan['dp_pct'] + (months if plan['monthly'] > 0 else 0))}%",
 
         "GOV FEES": f"{gov_fee:,.2f}"
     }
 
-    doc.render(context)
+    try:
+        doc.render(context)
 
-    file_stream = io.BytesIO()
-    doc.save(file_stream)
-    file_stream.seek(0)
+        file_stream = io.BytesIO()
+        doc.save(file_stream)
+        file_stream.seek(0)
 
-    st.success("✅ File جاهز")
+        st.success("✅ File جاهز")
 
-    st.download_button(
-        label="⬇️ Download RF",
-        data=file_stream,
-        file_name=f"{project}_{unit}_{full_name}.docx",
-        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
+        st.download_button(
+            label="⬇️ Download RF",
+            data=file_stream,
+            file_name=f"{project}_{unit}_{full_name}.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+
+    except Exception as e:
+        st.error(f"❌ Error: {str(e)}")
