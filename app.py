@@ -4,62 +4,159 @@ from datetime import datetime, timedelta
 import io
 import os
 
-st.set_page_config(page_title="RF Generator", layout="centered")
+# =========================
+# PAGE CONFIG
+# =========================
+st.set_page_config(
+    page_title="RF Generator",
+    layout="centered"
+)
+
 st.title("📄 Reservation Form Generator")
 
-# ✅ Template Path
+# =========================
+# TEMPLATE PATH
+# =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_NAME = "template.docx"
+
+TEMPLATE_NAME = "template_fixed.docx"
+
 template_path = os.path.join(BASE_DIR, TEMPLATE_NAME)
 
-# ✅ Check template exists
+# =========================
+# CHECK TEMPLATE
+# =========================
 if not os.path.exists(template_path):
-    st.error("❌ template.docx not found")
+    st.error("❌ template_fixed.docx not found")
     st.stop()
 
-# ✅ Payment Plans
+# =========================
+# PAYMENT PLANS
+# =========================
 payment_plans = {
-    "30% DP / 5% Disc / 70% Handover": {"dp_pct": 30, "disc": 5, "monthly": 0},
-    "30% DP / 0% Disc / 70% Handover": {"dp_pct": 30, "disc": 0, "monthly": 0},
-    "5% DP / 5% Disc / 1% Monthly": {"dp_pct": 5, "disc": 5, "monthly": 1},
-    "5% DP / 0% Disc / 1% Monthly": {"dp_pct": 5, "disc": 0, "monthly": 1},
-    "10% DP / 5% Disc / 1% Monthly": {"dp_pct": 10, "disc": 5, "monthly": 1},
-    "20% DP / 15% Disc / 1% Monthly": {"dp_pct": 20, "disc": 15, "monthly": 1},
-    "25% Discount Cash": {"dp_pct": 100, "disc": 25, "monthly": 0},
-    "30% Discount Cash": {"dp_pct": 100, "disc": 30, "monthly": 0},
-    "No discount (Full in 1 month)": {"dp_pct": 100, "disc": 0, "monthly": 0},
+
+    "30% DP / 5% Disc / 70% Handover": {
+        "dp_pct": 30,
+        "disc": 5,
+        "monthly": 0
+    },
+
+    "30% DP / 0% Disc / 70% Handover": {
+        "dp_pct": 30,
+        "disc": 0,
+        "monthly": 0
+    },
+
+    "5% DP / 5% Disc / 1% Monthly": {
+        "dp_pct": 5,
+        "disc": 5,
+        "monthly": 1
+    },
+
+    "5% DP / 0% Disc / 1% Monthly": {
+        "dp_pct": 5,
+        "disc": 0,
+        "monthly": 1
+    },
+
+    "10% DP / 5% Disc / 1% Monthly": {
+        "dp_pct": 10,
+        "disc": 5,
+        "monthly": 1
+    },
+
+    "20% DP / 15% Disc / 1% Monthly": {
+        "dp_pct": 20,
+        "disc": 15,
+        "monthly": 1
+    },
+
+    "25% Discount Cash": {
+        "dp_pct": 100,
+        "disc": 25,
+        "monthly": 0
+    },
+
+    "30% Discount Cash": {
+        "dp_pct": 100,
+        "disc": 30,
+        "monthly": 0
+    },
+
+    "No discount (Full in 1 month)": {
+        "dp_pct": 100,
+        "disc": 0,
+        "monthly": 0
+    },
 }
 
-# ✅ Form
-with st.form("form"):
+# =========================
+# FORM
+# =========================
+with st.form("rf_form"):
 
     col1, col2 = st.columns(2)
 
+    # =====================
+    # CLIENT INFO
+    # =====================
     with col1:
+
         st.subheader("👤 Client Info")
 
         full_name = st.text_input("Full Name")
-        eid = st.text_input("EID")
-        passport = st.text_input("Passport")
-        address = st.text_input("Address")
-        phone = st.text_input("Phone")
-        email = st.text_input("Email")
-        client_type = st.radio("Client Type", ["Normal", "Investor"])
 
+        eid = st.text_input("EID")
+
+        passport = st.text_input("Passport")
+
+        address = st.text_input("Address")
+
+        phone = st.text_input("Phone")
+
+        email = st.text_input("Email")
+
+        client_type = st.radio(
+            "Client Type",
+            ["Normal", "Investor"]
+        )
+
+    # =====================
+    # UNIT INFO
+    # =====================
     with col2:
+
         st.subheader("🏠 Unit Info")
 
         project = st.text_input("Project Name")
-        unit = st.text_input("Unit Number")
-        unit_type = st.text_input("Unit Type")
-        view = st.text_input("View")
-        sqft = st.number_input("SQFT", value=0.0)
-        price = st.number_input("Price", value=0.0)
 
+        unit = st.text_input("Unit Number")
+
+        unit_type = st.text_input("Unit Type")
+
+        view = st.text_input("View")
+
+        sqft = st.number_input(
+            "SQFT",
+            value=0.0
+        )
+
+        price = st.number_input(
+            "Price",
+            value=0.0
+        )
+
+    # =====================
+    # SALES INFO
+    # =====================
     st.subheader("💼 Sales Info")
 
     pc_name = st.text_input("PC Name")
-    lead_type = st.radio("Lead Type", ["Direct", "Indirect"])
+
+    lead_type = st.radio(
+        "Lead Type",
+        ["Direct", "Indirect"]
+    )
 
     brokerage = (
         st.text_input("Brokerage Company")
@@ -67,107 +164,213 @@ with st.form("form"):
         else "Direct"
     )
 
+    # =====================
+    # PAYMENT INFO
+    # =====================
     st.subheader("💰 Payment")
 
-    plan_name = st.selectbox("Payment Plan", list(payment_plans.keys()))
-    start_date = st.date_input("Start Date", datetime.now())
-    months = st.number_input("Installments Months", value=42)
-    res_fee = st.number_input("Reservation Fee", value=20000)
+    plan_name = st.selectbox(
+        "Payment Plan",
+        list(payment_plans.keys())
+    )
+
+    start_date = st.date_input(
+        "Start Date",
+        datetime.now()
+    )
+
+    months = st.number_input(
+        "Installments Months",
+        value=42
+    )
+
+    res_fee = st.number_input(
+        "Reservation Fee",
+        value=20000
+    )
 
     reg_option = st.selectbox(
         "Registration Fee",
         ["DLD", "ADM", "ADGM"]
     )
 
-    submit = st.form_submit_button("Generate RF")
+    submit = st.form_submit_button(
+        "Generate RF"
+    )
 
-# ✅ Generate File
+# =========================
+# GENERATE FILE
+# =========================
 if submit:
 
     try:
 
         plan = payment_plans[plan_name]
 
-        selling_price = price * (1 - plan["disc"] / 100)
+        # =====================
+        # CALCULATIONS
+        # =====================
+        selling_price = price * (
+            1 - plan["disc"] / 100
+        )
 
-        dp_amount = selling_price * (plan["dp_pct"] / 100)
+        dp_amount = selling_price * (
+            plan["dp_pct"] / 100
+        )
 
-        monthly_amount = selling_price * (plan["monthly"] / 100)
+        monthly_amount = selling_price * (
+            plan["monthly"] / 100
+        )
 
-        total_monthly = monthly_amount * months
+        total_monthly = (
+            monthly_amount * months
+        )
 
-        end_date = start_date + timedelta(days=30 * months)
+        end_date = start_date + timedelta(
+            days=30 * months
+        )
 
-        # ✅ Gov Fees
+        # =====================
+        # GOV FEES
+        # =====================
         if reg_option == "DLD":
-            gov_fee = price * 0.04 + 1193.15
+
+            gov_fee = (
+                price * 0.04
+                + 1193.15
+            )
 
         elif reg_option == "ADM":
-            gov_fee = price * 0.02 + 625
+
+            gov_fee = (
+                price * 0.02
+                + 625
+            )
 
         else:
-            gov_fee = price * 0.02 + 5625
 
-        # ✅ Load Template
-        doc = DocxTemplate(template_path)
+            gov_fee = (
+                price * 0.02
+                + 5625
+            )
 
+        # =====================
+        # LOAD TEMPLATE
+        # =====================
+        doc = DocxTemplate(
+            template_path
+        )
+
+        # =====================
+        # CONTEXT
+        # =====================
         context = {
 
-            "DATE": datetime.now().strftime("%d/%m/%Y"),
+            "DATE":
+                datetime.now().strftime(
+                    "%d/%m/%Y"
+                ),
 
-            "Project_Name": project,
+            "Project_Name":
+                project,
 
-            "Full_Name": full_name,
-            "Home_Address": address,
-            "Email_Address": email,
-            "Mobile_Number": phone,
-            "ID_Number": eid,
-            "Nationality": "",
-            "Passport_Number": passport,
+            "Full_Name":
+                full_name,
+
+            "Home_Address":
+                address,
+
+            "Email_Address":
+                email,
+
+            "Mobile_Number":
+                phone,
+
+            "ID_Number":
+                eid,
+
+            "Nationality":
+                "",
+
+            "Passport_Number":
+                passport,
 
             "Residency_Status":
-                "☒ Normal   ☐ Investor"
-                if client_type == "Normal"
-                else "☐ Normal   ☒ Investor",
+                (
+                    "☒ Normal   ☐ Investor"
+                    if client_type == "Normal"
+                    else "☐ Normal   ☒ Investor"
+                ),
 
             "residency_status":
-                "☒ Normal   ☐ Investor"
-                if client_type == "Normal"
-                else "☐ Normal   ☒ Investor",
+                (
+                    "☒ Normal   ☐ Investor"
+                    if client_type == "Normal"
+                    else "☐ Normal   ☒ Investor"
+                ),
 
-            "total_purchase_price": f"{selling_price:,.2f}",
+            "total_purchase_price":
+                f"{selling_price:,.2f}",
 
-            "Unit_Number": unit,
-            "Unit_Type_BHK": unit_type,
-            "View": view,
-            "DET_UNITS": "Residential",
+            "Unit_Number":
+                unit,
 
-            "Total_UNIT": f"{sqft:,.2f} sqft",
+            "Unit_Type_BHK":
+                unit_type,
 
-            "PC_Name": pc_name,
-            "Brokerage_company": brokerage,
+            "View":
+                view,
 
-            "Reservation_Fee": f"{res_fee:,.2f}",
+            "DET_UNITS":
+                "Residential",
 
-            "res_pct": "-",
+            "Total_UNIT":
+                f"{sqft:,.2f} sqft",
 
-            "dp_pct": f"{plan['dp_pct']}%",
+            "PC_Name":
+                pc_name,
 
-            "dp_date": start_date.strftime("%d/%m/%Y"),
+            "Brokerage_company":
+                brokerage,
 
-            "dp_amount": f"{dp_amount:,.2f}",
+            "Reservation_Fee":
+                f"{res_fee:,.2f}",
 
-            "monthly_amount": f"{monthly_amount:,.0f}",
+            "res_pct":
+                "-",
 
-            "months_count": months,
+            "dp_pct":
+                f"{plan['dp_pct']}%",
 
-            "total_monthly_amount": f"{total_monthly:,.0f}",
+            "dp_date":
+                start_date.strftime(
+                    "%d/%m/%Y"
+                ),
 
-            "total_monthly_pct": f"{months}%",
+            "dp_amount":
+                f"{dp_amount:,.2f}",
 
-            "start_date": start_date.strftime("%d-%b-%Y"),
+            "monthly_amount":
+                f"{monthly_amount:,.0f}",
 
-            "end_date": end_date.strftime("%d-%b-%Y"),
+            "months_count":
+                months,
+
+            "total_monthly_amount":
+                f"{total_monthly:,.0f}",
+
+            "total_monthly_pct":
+                f"{months}%",
+
+            "start_date":
+                start_date.strftime(
+                    "%d-%b-%Y"
+                ),
+
+            "end_date":
+                end_date.strftime(
+                    "%d-%b-%Y"
+                ),
 
             "Total_Construction_pct":
                 f"{plan['dp_pct'] + (months if plan['monthly'] > 0 else 0)}%",
@@ -175,21 +378,34 @@ if submit:
             "Completion_pct":
                 f"{100 - (plan['dp_pct'] + (months if plan['monthly'] > 0 else 0))}%",
 
-            "GOV_FEES": f"{gov_fee:,.2f}",
+            "GOV_FEES":
+                f"{gov_fee:,.2f}",
         }
 
-        # ✅ Render
+        # =====================
+        # RENDER TEMPLATE
+        # =====================
         doc.render(context)
 
-        # ✅ Save
+        # =====================
+        # SAVE FILE
+        # =====================
         file_stream = io.BytesIO()
 
         doc.save(file_stream)
 
         file_stream.seek(0)
 
-        st.success("✅ RF Generated Successfully")
+        # =====================
+        # SUCCESS
+        # =====================
+        st.success(
+            "✅ RF Generated Successfully"
+        )
 
+        # =====================
+        # DOWNLOAD BUTTON
+        # =====================
         st.download_button(
             label="⬇️ Download RF",
             data=file_stream,
@@ -199,4 +415,6 @@ if submit:
 
     except Exception as e:
 
-        st.error(f"❌ Error: {str(e)}")
+        st.error(
+            f"❌ Error: {str(e)}"
+        )
