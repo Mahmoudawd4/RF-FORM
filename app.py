@@ -220,6 +220,39 @@ projects_data = {
 }
 
 # ==================================================
+# HANDOVER DATES
+# ==================================================
+handover_dates = {
+
+    "SILA": "30-09-2029",
+    "SENSI": "30-06-2029",
+    "BAIA": "30-09-2029",
+    "BRABUS TOWNHOUSE": "30-06-2029",
+    "BRABUS TOWER": "30-03-2029",
+    "THE DISTRICT": "30-06-2029",
+    "MARLIN 2": "30-12-2028",
+    "MARLIN": "30-12-2027",
+    "REPORTAGE TOWER": "30-12-2028",
+    "VISTA 3": "30-12-2027",
+    "MV1": "30-12-2025",
+    "MV2": "30-12-2026",
+    "ROYAL PARK": "30-12-2027",
+    "SELINA BAY": "30-12-2027",
+    "KHALIFA": "30-09-2028",
+    "PERLA 3": "30-06-2027",
+    "PERLA 2": "30-12-2026",
+    "PERLA 1": "30-12-2028",
+    "PLAZA 2": "30-06-2026",
+    "PLAZA 1": "30-12-2026",
+    "DIVA 1 & 2": "30-09-2026",
+    "AL RAHA 1 LOFTS 1": "30-06-2025",
+    "AL RAHA 2 LOFTS 2": "30-06-2025",
+    "OASIS 1": "30-06-2025",
+    "OASIS 2": "30-06-2025",
+    "THE GATE": "30-06-2025",
+}
+
+# ==================================================
 # PAYMENT PLANS
 # ==================================================
 payment_plans = {
@@ -259,9 +292,6 @@ with st.form("rf_form"):
 
     col1, col2 = st.columns(2)
 
-    # ==============================================
-    # CLIENT INFO
-    # ==============================================
     with col1:
 
         st.subheader("👤 Client Info")
@@ -285,9 +315,11 @@ with st.form("rf_form"):
             ["RESIDENCE", "INTERNATIONAL"]
         )
 
-    # ==============================================
-    # UNIT INFO
-    # ==============================================
+        client_type = st.radio(
+            "Client Type",
+            ["Normal", "Investor"]
+        )
+
     with col2:
 
         st.subheader("🏠 Unit Info")
@@ -335,19 +367,23 @@ with st.form("rf_form"):
 
     if lead_type == "Indirect":
 
+        direct_source = ""
+
         brokerage = st.text_input(
             "Brokerage Company"
         )
 
     else:
 
-        brokerage = st.selectbox(
+        direct_source = st.selectbox(
             "Direct Source",
             ["Personal", "Smartsheet"]
         )
 
+        brokerage = ""
+
     # ==============================================
-    # PAYMENT INFO
+    # PAYMENT
     # ==============================================
     st.subheader("💰 Payment")
 
@@ -361,9 +397,24 @@ with st.form("rf_form"):
         datetime.now()
     )
 
-    months = st.number_input(
+    # AUTO MONTHS
+    handover_date = datetime.strptime(
+        handover_dates[project],
+        "%d-%m-%Y"
+    )
+
+    months = max(
+        1,
+        (
+            (handover_date.year - start_date.year) * 12
+            + (handover_date.month - start_date.month)
+        )
+    )
+
+    st.number_input(
         "Installments Months",
-        value=42
+        value=months,
+        disabled=True
     )
 
     res_fee = st.number_input(
@@ -389,9 +440,6 @@ if submit:
 
         plan = payment_plans[plan_name]
 
-        # ==========================================
-        # CALCULATIONS
-        # ==========================================
         selling_price = price * (
             1 - plan["disc"] / 100
         )
@@ -408,9 +456,10 @@ if submit:
             monthly_amount * months
         )
 
-        construction_pct = (
+        construction_pct = min(
+            100,
             plan["dp_pct"] +
-            (months if plan["monthly"] > 0 else 0)
+            (months * plan["monthly"])
         )
 
         completion_pct = (
@@ -431,9 +480,7 @@ if submit:
             days=30 * months
         )
 
-        # ==========================================
         # GOV FEES
-        # ==========================================
         if reg_option == "DLD":
 
             gov_fee = (
@@ -455,16 +502,12 @@ if submit:
                 + 5625
             )
 
-        # ==========================================
         # LOAD TEMPLATE
-        # ==========================================
         doc = DocxTemplate(
             template_path
         )
 
-        # ==========================================
         # CONTEXT
-        # ==========================================
         context = {
 
             "DATE":
@@ -500,9 +543,6 @@ if submit:
             "Residency_Status":
                 residency_status,
 
-            "residency_status":
-                residency_status,
-
             "total_purchase_price":
                 f"{selling_price:,.2f}",
 
@@ -524,8 +564,14 @@ if submit:
             "PC_Name":
                 pc_name,
 
+            "Lead_Type":
+                lead_type,
+
             "Brokerage_company":
                 brokerage,
+
+            "Direct_Source":
+                direct_source,
 
             "Reservation_Fee":
                 f"{res_fee:,.2f}",
@@ -563,7 +609,7 @@ if submit:
             "Total_Construction_pct":
                 f"{construction_pct}%",
 
-            "Total_Construction_amount":
+            "total_purchase_Construction":
                 f"{construction_amount:,.2f}",
 
             "Completion_pct":
@@ -572,18 +618,21 @@ if submit:
             "Completion_amount":
                 f"{completion_amount:,.2f}",
 
+            "NormalORInvestor":
+                (
+                    "☒ Normal   ☐ Investor"
+                    if client_type == "Normal"
+                    else "☐ Normal   ☒ Investor"
+                ),
+
             "GOV_FEES":
                 f"{gov_fee:,.2f}",
         }
 
-        # ==========================================
         # RENDER
-        # ==========================================
         doc.render(context)
 
-        # ==========================================
-        # SAVE FILE
-        # ==========================================
+        # SAVE
         file_stream = io.BytesIO()
 
         doc.save(file_stream)
