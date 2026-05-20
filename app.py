@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 import io
 import os
 
-# =========================
+# ==================================================
 # PAGE CONFIG
-# =========================
+# ==================================================
 st.set_page_config(
     page_title="RF Generator",
     layout="centered"
@@ -14,97 +14,261 @@ st.set_page_config(
 
 st.title("📄 Reservation Form Generator")
 
-# =========================
+# ==================================================
 # TEMPLATE PATH
-# =========================
+# ==================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 TEMPLATE_NAME = "template_fixed.docx"
 
 template_path = os.path.join(BASE_DIR, TEMPLATE_NAME)
 
-# =========================
-# CHECK TEMPLATE
-# =========================
 if not os.path.exists(template_path):
     st.error("❌ template_fixed.docx not found")
     st.stop()
 
-# =========================
-# PAYMENT PLANS
-# =========================
-payment_plans = {
+# ==================================================
+# PROJECTS & DEVELOPERS
+# ==================================================
+projects_data = {
 
-    "30% DP / 5% Disc / 70% Handover": {
-        "dp_pct": 30,
-        "disc": 5,
-        "monthly": 0
-    },
+    "SILA": "REQUEST PROPERTIES – L.L.C – S.P.C",
 
-    "30% DP / 0% Disc / 70% Handover": {
-        "dp_pct": 30,
-        "disc": 0,
-        "monthly": 0
-    },
+    "SENSI": "NOVA MIDDLE EAST PROPERTY INVESTMENT – L.L.C – S.P.C",
 
-    "5% DP / 5% Disc / 1% Monthly": {
-        "dp_pct": 5,
-        "disc": 5,
-        "monthly": 1
-    },
+    "BAIA": "REPORTAGE IMPERIAL PROPERTIES LLC",
 
-    "5% DP / 0% Disc / 1% Monthly": {
-        "dp_pct": 5,
-        "disc": 0,
-        "monthly": 1
-    },
+    "BRABUS TOWNHOUSE":
+        "Flag Al Raha Real Estate Lease and Management Services LLC SPC",
 
-    "10% DP / 5% Disc / 1% Monthly": {
-        "dp_pct": 10,
-        "disc": 5,
-        "monthly": 1
-    },
+    "BRABUS TOWER":
+        "Flag Al Raha Real Estate Lease and Management Services LLC SPC",
 
-    "20% DP / 15% Disc / 1% Monthly": {
-        "dp_pct": 20,
-        "disc": 15,
-        "monthly": 1
-    },
+    "THE DISTRICT":
+        "Emirates Reportage Devel and Invest",
 
-    "25% Discount Cash": {
-        "dp_pct": 100,
-        "disc": 25,
-        "monthly": 0
-    },
+    "MARLIN 2":
+        "Reportage Prime Properties LLC-Branch of Abu Dhabi 1",
 
-    "30% Discount Cash": {
-        "dp_pct": 100,
-        "disc": 30,
-        "monthly": 0
-    },
+    "MARLIN":
+        "Reportage Prime Properties LLC-Branch of Abu Dhabi 1",
 
-    "No discount (Full in 1 month)": {
-        "dp_pct": 100,
-        "disc": 0,
-        "monthly": 0
-    },
+    "REPORTAGE TOWER":
+        "Reportage Global Real Estate Development LLC",
+
+    "VISTA 3":
+        "Reportage Prime Properties LLC-Branch of Abu Dhabi 1",
+
+    "MV1":
+        "Webridge Properties LLC",
+
+    "MV2":
+        "Sama Emirates Holding Group LLC",
+
+    "ROYAL PARK":
+        "Sama Emirates Properties SP LLC",
+
+    "SELINA BAY":
+        "Century 7 Properties LLC Branch of Abu Dhabi 1",
+
+    "KHALIFA":
+        "REPORTAGE VILLAGE ABU DHABI - Reportage Prime Properties LLC-Branch of Abu Dhabi 1",
+
+    "PERLA 3":
+        "Emirates Reportage Development and Investments LLC",
+
+    "PERLA 2":
+        "Reportage Line Properties LLC",
+
+    "PERLA 1":
+        "Reportage Line Properties LLC",
+
+    "PLAZA 2":
+        "Reportage Prime Properties LLC-Branch of Abu Dhabi 1",
+
+    "PLAZA 1":
+        "Reportage Prime Properties LLC-Branch of Abu Dhabi 1",
+
+    "DIVA 1 & 2":
+        "Webridge Properties L.L.C",
+
+    "AL RAHA 1 LOFTS 1":
+        "Reportage Investment LLC",
+
+    "AL RAHA 2 LOFTS 2":
+        "Reportage Investment LLC",
+
+    "OASIS 1":
+        "Elige Real Estate LLC",
+
+    "OASIS 2":
+        "Reportage Prime Properties LLC-Branch of Abu Dhabi 1",
+
+    "THE GATE":
+        "Reportage Hospitality Real Estate Limited",
+
+    "VERDANA 6W TOWNHOUSE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 6X TOWNHOUSE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 6Y TOWNHOUSE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 3K RESIDENCE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 3L RESIDENCE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 3M RESIDENCE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 3N RESIDENCE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 3N TOWNHOUSE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 3O RESIDENCES":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 3O TOWNHOUSE":
+        "REPORTAGE PLUS A REAL ESTATE DEVELOPMENT",
+
+    "VERDANA 10 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 10 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 9 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 9 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 8 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 8 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 7 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 7 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 5 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 5 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 4 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 4 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 3 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 3 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 2 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 2 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 1 RESIDENCE":
+        "Reportage Prime Properties LLC",
+
+    "VERDANA 1 TOWNHOUSE":
+        "Reportage Prime Properties LLC",
+
+    "REPORTAGE HILLS":
+        "Reportage Prime Properties LLC",
+
+    "TAORMINA VILLAGE 2":
+        "Reportage Prime Properties LLC",
+
+    "TAORMINA VILLAGE 1":
+        "Reportage Prime Properties LLC",
+
+    "REPORTAGE VILLAGE":
+        "Reportage Prime Properties LLC",
+
+    "BIANCA":
+        "Reportage Prime Properties LLC",
+
+    "ALBA":
+        "Century Seven Properties LLC",
+
+    "RUKAN TOWER":
+        "Reportage Prime Properties LLC",
+
+    "ALEXIS TOWER":
+        "Reportage Prime Properties LLC",
+
+    "RUKAN LOFT 2":
+        "Reportage Prime Properties LLC",
 }
 
-# =========================
+# ==================================================
+# PAYMENT PLANS
+# ==================================================
+payment_plans = {
+
+    "30% DP / 5% Disc / 70% Handover":
+        {"dp_pct": 30, "disc": 5, "monthly": 0},
+
+    "30% DP / 0% Disc / 70% Handover":
+        {"dp_pct": 30, "disc": 0, "monthly": 0},
+
+    "5% DP / 5% Disc / 1% Monthly":
+        {"dp_pct": 5, "disc": 5, "monthly": 1},
+
+    "5% DP / 0% Disc / 1% Monthly":
+        {"dp_pct": 5, "disc": 0, "monthly": 1},
+
+    "10% DP / 5% Disc / 1% Monthly":
+        {"dp_pct": 10, "disc": 5, "monthly": 1},
+
+    "20% DP / 15% Disc / 1% Monthly":
+        {"dp_pct": 20, "disc": 15, "monthly": 1},
+
+    "25% Discount Cash":
+        {"dp_pct": 100, "disc": 25, "monthly": 0},
+
+    "30% Discount Cash":
+        {"dp_pct": 100, "disc": 30, "monthly": 0},
+
+    "No discount (Full in 1 month)":
+        {"dp_pct": 100, "disc": 0, "monthly": 0},
+}
+
+# ==================================================
 # FORM
-# =========================
+# ==================================================
 with st.form("rf_form"):
 
     col1, col2 = st.columns(2)
 
-    # =====================
+    # ==============================================
     # CLIENT INFO
-    # =====================
+    # ==============================================
     with col1:
 
         st.subheader("👤 Client Info")
 
         full_name = st.text_input("Full Name")
+
+        nationality = st.text_input("Nationality")
 
         eid = st.text_input("EID")
 
@@ -116,19 +280,30 @@ with st.form("rf_form"):
 
         email = st.text_input("Email")
 
-        client_type = st.radio(
-            "Client Type",
-            ["Normal", "Investor"]
+        residency_status = st.selectbox(
+            "Residency Status",
+            ["RESIDENCE", "INTERNATIONAL"]
         )
 
-    # =====================
+    # ==============================================
     # UNIT INFO
-    # =====================
+    # ==============================================
     with col2:
 
         st.subheader("🏠 Unit Info")
 
-        project = st.text_input("Project Name")
+        project = st.selectbox(
+            "Project Name",
+            list(projects_data.keys())
+        )
+
+        developer_name = projects_data[project]
+
+        st.text_input(
+            "Developer Name",
+            value=developer_name,
+            disabled=True
+        )
 
         unit = st.text_input("Unit Number")
 
@@ -146,9 +321,9 @@ with st.form("rf_form"):
             value=0.0
         )
 
-    # =====================
+    # ==============================================
     # SALES INFO
-    # =====================
+    # ==============================================
     st.subheader("💼 Sales Info")
 
     pc_name = st.text_input("PC Name")
@@ -158,15 +333,22 @@ with st.form("rf_form"):
         ["Direct", "Indirect"]
     )
 
-    brokerage = (
-        st.text_input("Brokerage Company")
-        if lead_type == "Indirect"
-        else "Direct"
-    )
+    if lead_type == "Indirect":
 
-    # =====================
+        brokerage = st.text_input(
+            "Brokerage Company"
+        )
+
+    else:
+
+        brokerage = st.selectbox(
+            "Direct Source",
+            ["Personal", "Smartsheet"]
+        )
+
+    # ==============================================
     # PAYMENT INFO
-    # =====================
+    # ==============================================
     st.subheader("💰 Payment")
 
     plan_name = st.selectbox(
@@ -198,18 +380,18 @@ with st.form("rf_form"):
         "Generate RF"
     )
 
-# =========================
+# ==================================================
 # GENERATE FILE
-# =========================
+# ==================================================
 if submit:
 
     try:
 
         plan = payment_plans[plan_name]
 
-        # =====================
+        # ==========================================
         # CALCULATIONS
-        # =====================
+        # ==========================================
         selling_price = price * (
             1 - plan["disc"] / 100
         )
@@ -226,13 +408,32 @@ if submit:
             monthly_amount * months
         )
 
+        construction_pct = (
+            plan["dp_pct"] +
+            (months if plan["monthly"] > 0 else 0)
+        )
+
+        completion_pct = (
+            100 - construction_pct
+        )
+
+        construction_amount = (
+            selling_price *
+            construction_pct / 100
+        )
+
+        completion_amount = (
+            selling_price *
+            completion_pct / 100
+        )
+
         end_date = start_date + timedelta(
             days=30 * months
         )
 
-        # =====================
+        # ==========================================
         # GOV FEES
-        # =====================
+        # ==========================================
         if reg_option == "DLD":
 
             gov_fee = (
@@ -254,25 +455,26 @@ if submit:
                 + 5625
             )
 
-        # =====================
+        # ==========================================
         # LOAD TEMPLATE
-        # =====================
+        # ==========================================
         doc = DocxTemplate(
             template_path
         )
 
-        # =====================
+        # ==========================================
         # CONTEXT
-        # =====================
+        # ==========================================
         context = {
 
             "DATE":
-                datetime.now().strftime(
-                    "%d/%m/%Y"
-                ),
+                datetime.now().strftime("%d/%m/%Y"),
 
             "Project_Name":
                 project,
+
+            "Developer_Name":
+                developer_name,
 
             "Full_Name":
                 full_name,
@@ -290,24 +492,16 @@ if submit:
                 eid,
 
             "Nationality":
-                "",
+                nationality,
 
             "Passport_Number":
                 passport,
 
             "Residency_Status":
-                (
-                    "☒ Normal   ☐ Investor"
-                    if client_type == "Normal"
-                    else "☐ Normal   ☒ Investor"
-                ),
+                residency_status,
 
             "residency_status":
-                (
-                    "☒ Normal   ☐ Investor"
-                    if client_type == "Normal"
-                    else "☐ Normal   ☒ Investor"
-                ),
+                residency_status,
 
             "total_purchase_price":
                 f"{selling_price:,.2f}",
@@ -343,9 +537,7 @@ if submit:
                 f"{plan['dp_pct']}%",
 
             "dp_date":
-                start_date.strftime(
-                    "%d/%m/%Y"
-                ),
+                start_date.strftime("%d/%m/%Y"),
 
             "dp_amount":
                 f"{dp_amount:,.2f}",
@@ -363,49 +555,45 @@ if submit:
                 f"{months}%",
 
             "start_date":
-                start_date.strftime(
-                    "%d-%b-%Y"
-                ),
+                start_date.strftime("%d-%b-%Y"),
 
             "end_date":
-                end_date.strftime(
-                    "%d-%b-%Y"
-                ),
+                end_date.strftime("%d-%b-%Y"),
 
             "Total_Construction_pct":
-                f"{plan['dp_pct'] + (months if plan['monthly'] > 0 else 0)}%",
+                f"{construction_pct}%",
+
+            "Total_Construction_amount":
+                f"{construction_amount:,.2f}",
 
             "Completion_pct":
-                f"{100 - (plan['dp_pct'] + (months if plan['monthly'] > 0 else 0))}%",
+                f"{completion_pct}%",
+
+            "Completion_amount":
+                f"{completion_amount:,.2f}",
 
             "GOV_FEES":
                 f"{gov_fee:,.2f}",
         }
 
-        # =====================
-        # RENDER TEMPLATE
-        # =====================
+        # ==========================================
+        # RENDER
+        # ==========================================
         doc.render(context)
 
-        # =====================
+        # ==========================================
         # SAVE FILE
-        # =====================
+        # ==========================================
         file_stream = io.BytesIO()
 
         doc.save(file_stream)
 
         file_stream.seek(0)
 
-        # =====================
-        # SUCCESS
-        # =====================
         st.success(
             "✅ RF Generated Successfully"
         )
 
-        # =====================
-        # DOWNLOAD BUTTON
-        # =====================
         st.download_button(
             label="⬇️ Download RF",
             data=file_stream,
