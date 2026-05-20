@@ -1,8 +1,7 @@
-#streamlit
-#docxtpl
-#python-docx
 streamlit
 docxtpl
-reportlab
-lxml
-pillow
+python-docx
+
+#reportlab
+#lxml
+#pillow
